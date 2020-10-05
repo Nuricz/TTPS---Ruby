@@ -203,7 +203,7 @@ Mira 'git help git' para una vista general del sistema.
     Solución:
     ```rb
     def reemplazar(string)
-        string.gsub(/[{}]/, '{' => "do\n", '}' => "\nend") #=> "Hdo\\nlldo\\no \\nendwdo\\no\\nendrd!"
+        string.gsub(/[{}]/, '{' => "do\n", '}' => "\nend")
     end
     ```
 
