@@ -200,12 +200,12 @@ Mira 'git help git' para una vista general del sistema.
    # => "3.times do\n |i| puts i \nend"
    ```
 
-   Solución:
-   ```rb
-   string = "H{ll{o }w{o}rd!"
-   string.gsub(/[{}]/, '{' => 'do\n', '}' => '\nend')
-   string #=> "Hdo\\nlldo\\no \\nendwdo\\no\\nendrd!"
-   ```
+    Solución:
+    ```rb
+    def reemplazar(string)
+        string.gsub(/[{}]/, '{' => "do\n", '}' => "\nend") #=> "Hdo\\nlldo\\no \\nendwdo\\no\\nendrd!"
+    end
+    ```
 
 4. Escribí una función que convierta a palabras la hora actual, dividiendo en los siguientes rangos los minutos:
    * Si el minuto está entre 0 y 10, debe decir "en punto",
