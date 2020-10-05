@@ -157,3 +157,211 @@ Mira 'git help git' para una vista general del sistema.
 
     Lesto - Ya está actualizado - No hubo cambios
 
+## Ruby: sintaxis y tipos básicos
+### Ejercicios
+
+1. Investigá y probá en un intérprete de Ruby cómo crear objetos de los siguientes tipos básicos usando literales y
+   usando el constructor `new` (cuando sea posible):
+   * Arreglo (`Array`)
+   * Diccionario o _hash_ (`Hash`)
+   * String (`String`)
+   * Símbolo (`Symbol`)
+
+    ```rb
+    array = Array.new(10)
+    array = ["a", "b", "c"]
+    ```
+    ```rb
+    hash = Hash.new
+    hash = {one: "one", two: "two"}
+    ```
+    ```rb
+    string = String.new
+    string = "Hola mundo!"
+    ```
+    ```rb
+    symbol = Symbol.new #Esto es incorrecto, da error porque no se puede instanciar a Symbol
+    :symbol #Esto es un símbolo
+    ```
+2. ¿Qué devuelve la siguiente comparación? ¿Por qué?
+
+   ```ruby
+   'TTPS Ruby'.object_id == 'TTPS Ruby'.object_id
+   ```
+
+   Devuelve falso porque cada string, a pesar de que su contenido sea el mismo, son instancias **distintas** de la clase String
+
+3. Escribí una función llamada `reemplazar` que reciba un `String` y que busque y reemplace en el mismo cualquier
+   ocurrencia de `{` por `do\n` y cualquier ocurrencia de `}` por `\nend`, de modo que convierta los bloques escritos
+   con llaves por bloques multilínea con `do` y `end`. Por ejemplo:
+
+   ```ruby
+   reemplazar("3.times { |i| puts i }")
+   # => "3.times do\n |i| puts i \nend"
+   ```
+
+   Solución:
+   ```rb
+   string = "H{ll{o }w{o}rd!"
+   string.gsub(/[{}]/, '{' => 'do\n', '}' => '\nend')
+   string #=> "Hdo\\nlldo\\no \\nendwdo\\no\\nendrd!"
+   ```
+
+4. Escribí una función que convierta a palabras la hora actual, dividiendo en los siguientes rangos los minutos:
+   * Si el minuto está entre 0 y 10, debe decir "en punto",
+   * si el minuto está entre 11 y 20, debe decir "y cuarto",
+   * si el minuto está entre 21 y 34, debe decir "y media",
+   * si el minuto está entre 35 y 44, debe decir "menos veinticinco" (de la hora siguiente),
+   * si el minuto está entre 45 y 55, debe decir "menos cuarto" (de la hora siguiente),
+   * y si el minuto está entre 56 y 59, debe decir "casi las" (y la hora siguiente)
+
+```rb
+time = Time.now.to_s[11..18] #Por el formato       que retorna Time.now, de esta forma me quedo con hh:mm:ss
+minutes = time[3..4]
+hour = time[0..1] 
+case minutes.to_i
+when 0..10
+    "En punto"
+when 11..20
+    "Y cuarto"
+when 21..34
+    "Y media"
+when 35..44
+    "Menos veinticinco"
+when 45..55
+    "Menos cuarto"
+when 56..59
+    "Casi las #{hour.to_i + 1}"
+end
+```
+
+   Esta es una forma muy sucia de resolver el ejercicio pero efectiva, el código funciona. Si revisamos la documentación de la clase Time de Ruby, podemos ver que existen métodos `hour, min, sec` para obtener hora, minutos y segundos respectivamente. De esta forma el código quedaría: 
+
+```rb
+case Time.now.min
+when 0..10
+    "En punto"
+when 11..20
+    "Y cuarto"
+when 21..34
+    "Y media"
+when 35..44
+    "Menos veinticinco"
+when 45..55
+    "Menos cuarto"
+when 56..59
+    "Casi las #{Time.hour + 1}"
+end
+```
+
+5. Escribí una función llamada `contar` que reciba como parámetro dos `string` y que retorne la cantidad de veces que
+   aparece el segundo `string` en el primero, sin importar mayúsculas y minúsculas. Por ejemplo:
+
+   ```ruby
+   contar("La casa de la esquina tiene la puerta roja y la ventana blanca.", "la")
+   # => 5
+   ```
+
+   Solución con regex:
+
+   ```rb
+   #Al uso de (?=word) (word puede ser cualquier cosa) se le llama "Positive lookahead" permite encontrar un substring word sin que ese substring forme parte de la coincidencia
+   def contar(str, str_search)
+        str.scan(/(?=#{str_search})/i).count
+   end
+   ```
+   Para más información:
+   >https://www.regular-expressions.info/lookaround.html
+
+6. Modificá la función anterior para que sólo considere como aparición del segundo `string` cuando se trate de palabras
+   completas. Por ejemplo:
+
+   ```ruby
+   contar_palabras("La casa de la esquina tiene la puerta roja y la ventana blanca.", "la")
+   # => 4
+   ```
+
+    Solución:
+
+   ```rb
+   def contar(str, str_search)
+        str.downcase.split.count(str_search)   
+   end
+   ```
+
+   Solución con regex:
+
+   ```rb
+   #\bword\b es una expresion regular que permite buscar word al estar entre "\b"
+   def contar_palabras(str, str_search)
+        str.scan(/\b#{str.search}\b/i).size
+   end
+   ```
+   Para más información:
+   >https://www.regular-expressions.info/wordboundaries.html
+   
+7. Dada una cadena cualquiera, y utilizando los métodos que provee la clase `String`, realizá las siguientes
+   operaciones sobre el `string`:
+   * Imprimilo con sus caracteres en orden inverso.
+
+    ```rb
+    "Nuria".reverse #=> "airuN"
+    ```
+
+   * Eliminá los espacios en blanco que contenga.
+   
+    ```rb
+    "Había una vez".delete(' ') #=> "Habíaunavez"
+    ```
+   
+   * Convertí cada uno de sus caracteres por su correspondiente valor ASCII.
+   
+    ```rb
+    "string".each_byte do |c|
+        puts c
+    end
+    #=> 115 116 114 105 110 103
+    ```
+   
+   * Cambiá las vocales por números (`a` por `4`, `e` por `3`, `i` por `1`, `o` por `0`, `u` por `6`).
+
+    ```rb
+    string = "murcielago"
+    string.gsub(/[aeiou]/, 'a' => '4', 'e' => '3', 'i' => '1', 'o' => '0', 'u' => '6')
+    string #=> "m6rc13l4g0"
+    ```
+
+8. ¿Qué hace el siguiente código?
+
+   ```ruby
+   [:upcase, :downcase, :capitalize, :swapcase].map do |meth|
+     "TTPS Ruby".send(meth)
+   end
+   ```
+   El método `send` de la clase `Object` invoca al método identificado por un símbolo pasándole los parámetros especificados.
+   En este caso el `string` 'TTPS Ruby' invoca 4 métodos en forma de símbolo guardados en un arreglo. 
+   
+   El resultado es:
+   ```rb
+   ["TTPS RUBY", "ttps ruby", "Ttps ruby", "ttps rUBY"]
+   ```
+
+9. Escribí una función que dado un arreglo que contenga varios `string` cualesquiera, retorne un nuevo arreglo donde
+   cada elemento es la longitud del `string` que se encuentra en la misma posición del arreglo recibido como parámetro.
+   Por ejemplo:
+
+    ```ruby
+    longitud(['TTPS', 'Opción', 'Ruby', 'Cursada 2019'])
+    # => [4, 6, 4, 12]
+    ```
+
+    Solución:
+    ```rb
+    def longitud(array_str)
+        array_length = []
+        array_str.each do |str|
+            array_length.push(str.length)
+        end
+        array_length
+    end
+    ```
