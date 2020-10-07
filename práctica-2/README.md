@@ -158,3 +158,318 @@
         end
     end
     ```
+
+## Clases y módulos
+
+8. Modelá con una jerarquía de clases algo sencillo que represente la siguiente situación:
+   * Tres tipos de vehículo: `Auto`, `Moto` y `Lancha`
+   * Los tres tipos arrancan usando una llave.
+   * El auto, adicionalmente, requiere que no esté puesto el freno de mano y que el cambio esté en punto muerto. La
+     moto, por otra parte, requiere una patada (sin la llave). La lancha arranca con la llave y listo.
+   * El arranque de los tres vehículos se prueba en un taller. La especificación de `Taller` es la siguiente:
+
+     ```ruby
+     class Taller
+       def probar(objeto)
+         objeto.arrancar
+       end
+     end
+     ```
+
+     Suponé que, posteriormente, el taller necesita probar una motosierra. ¿Podrías hacerlo? ¿Cómo? ¿Qué concepto
+     del lenguaje estás usando para poder realizar esto?
+
+    Solución:
+
+    ```rb
+    module Motor
+      @llave = true
+      @estado = ["arrancó", "no arrancó"]
+      def arrancar
+        if llave  
+          puts estado[0]
+        else
+          puts estado[1]
+    end
+
+    class Auto < ObjetoAMotor
+        @freno_de_mano = false
+        @cambio = "punto muerto"
+        @estados_cambio = ["punto muerto", "1ra", "2da", "3ra", "4ta", "5ta"]
+        def arrancar
+          if cambio == estados_cambio[0]
+            puts estado[0]
+          else
+            puts estado[1]   
+        end
+    end
+
+    class Moto < ObjetoAMotor
+      def arrancar
+        if dar_patada?
+          puts estado[0]
+        else
+          puts estado [1]
+      end
+
+      def dar_patada?
+        if llave
+          false
+        else
+          true
+      end
+    end
+
+    class Lancha < ObjetoAMotor
+    end
+    ```
+
+9. ¿Qué diferencia hay entre el uso de `include` y `extend` a la hora de incorporar un módulo en una clase?
+   1. Si quisieras usar un módulo para agregar métodos de instancia a una clase, ¿qué forma usarías a la hora de
+      incluirlo en la clase?
+   2. Si en cambio quisieras usar un módulo para agregar métodos de clase, ¿qué forma usarías a la hora de incluir el
+      módulo en la clase?
+
+    Respuestas:
+
+    * Si se utiliza `extend` los métodos incluídos se incluyen como métodos de clase.
+    * Si se utiliza `include` los métodos se incluyen como métodos de instancia.
+    1. Usaría `include ModuleName`
+    2. Usaría `extend ModuleName`
+
+10. Implementá el módulo `Reverso` para utilizar como _Mixin_ e incluilo en alguna clase para probarlo. `Reverso` debe
+    contener los siguientes métodos:
+    1. `#di_tcejbo`: Imprime el `object_id` del receptor en espejo (en orden inverso).
+    2. `#ssalc`: Imprime el nombre de la clase del receptor en espejo.
+
+    ```rb
+    module Reverso
+      def di_tcejbo
+        puts self.object_id
+      end
+    
+      def ssalc
+        self.class.to_s.reverse
+      end
+    end
+    ```
+
+11. Implementá el Mixin `Countable` que te permita hacer que cualquier clase cuente la cantidad de veces que los métodos de instancia definidos en ella es invocado. Utilizalo en distintas clases, tanto desarrolladas por vos como clases de la librería standard de Ruby, y chequeá los resultados. El Mixin debe tener los siguientes métodos:
+    
+    1. `count_invocations_of(sym)`: método de clase que al invocarse realiza las tareas necesarias para contabilizar las invocaciones al método de instancia cuyo nombre es `sym` (un símbolo).
+    2. `invoked?(sym)`: método de instancia que devuelve un valor booleano indicando si el método llamado `sym` fue invocado al menos una vez en la instancia receptora.
+    3. `invoked(sym)`: método de instancia que devuelve la cantidad de veces que el método identificado por `sym` fue invocado en la instancia receptora.
+
+    ```rb
+    module Countable
+      def invocations
+          @invocations ||= Hash.new(0)
+      end
+
+      module ClassMethods
+        def count_invocations_of(sym)
+          alias_method(":original_#{sym}", sym) 
+          define_method "#{sym}" do
+            invocations[__method__] += 1
+            send(":original_#{sym}")
+          end
+        end
+      end
+
+      def invoked?(sym)
+        if @invocations
+          @invocations[sym] > 0
+        else
+          false
+        end
+      end
+
+      def invoked(sym)
+        if @invocations
+          @invocations[sym]
+        else
+          0
+        end
+      end
+
+      def self.included(base)
+        base.extend ClassMethods
+      end
+    end
+
+    class Prueba
+      include Countable
+      def fun1
+      end
+
+      def fun2
+      end
+    end
+
+    #Probando
+    Prueba.count_invocations_of :fun1
+    p = Prueba.new
+    p.invoked? :fun1 #=> false
+    p.invoked :fun1 #=> 0
+    p.fun1
+    p.fun1 
+    p.fun1
+    p.invoked? :fun1 #=> true
+    p.invoked :fun1 #=> 3
+    p.fun2 #No fue añadida en count_invocations
+    p.invoked? :fun2 #=> false
+    p.invoked :fun2 #=> 0
+    #--------------------------
+    String.include Countable
+    String.count_invocations_of :upcase
+    s = "Hola mundo"
+    s.upcase #=> "HOLA MUNDO"
+    s.invoked? :upcase #=> true
+    s.invoked :upcase #=> 1
+    ```
+
+12. Dada la siguiente clase _abstracta_ `GenericFactory`, implementá subclases de la misma que permitan la creación de instancias de dichas clases mediante el uso del método de clase `.create`, de manera tal que luego puedas usar esa lógica para instanciar objetos sin invocar directamente el constructor `new`.
+
+    ```ruby
+    class GenericFactory
+      def self.create(**args)
+        new(**args)
+      end
+      def initialize(**args)
+        raise NotImplementedError
+      end
+    end
+    ```
+
+    Solución:
+    ```rb
+    class PokemonFactory < GenericFactory
+      def initialize **args
+      end
+    end
+    ```
+
+13. Modificá la implementación del ejercicio anterior para que `GenericFactory` sea un módulo que se incluya como _Mixin_ en las subclases que implementaste. ¿Qué modificaciones tuviste que hacer en tus clases?
+    
+    ```ruby
+    module GenericFactory
+      module ClassMethods
+        def self.create(**args)
+          new(**args)
+        end
+      end
+
+      def self.included base
+        base.extend ClassMethods
+      end
+
+      def initialize(**args)
+        raise NotImplementedError
+      end
+    end
+    ```
+
+    Solución:
+    ```rb
+    class PokemonFactory
+      include GenericFactory
+
+      def initialize **args
+      end
+    end
+    ```
+
+14. Extendé las clases `TrueClass` y `FalseClass` para que ambas respondan al método de instancia `opposite`, el cual en cada caso debe retornar el valor opuesto al que recibe la invocación al método. Por ejemplo:
+
+    ```ruby
+    false.opposite
+    # => true
+    true.opposite
+    # => false
+    true.opposite.opposite
+    # => true
+    ```
+
+    ```rb
+    module Opposite
+      def opposite
+        return !self
+      end
+    end  
+    ```
+
+15. Analizá el script Ruby presentado a continuación e indicá:
+
+    ```ruby
+    VALUE = 'global'
+   
+    module A
+      VALUE = 'A'
+   
+      class B
+        VALUE = 'B'
+   
+        def self.value
+          VALUE
+        end
+   
+        def value
+          'iB'
+        end
+      end
+   
+      def self.value
+        VALUE
+      end
+    end
+   
+    class C
+      class D
+        VALUE = 'D'
+    
+        def self.value
+          VALUE
+        end
+      end
+   
+      module E
+        def self.value
+          VALUE
+        end
+      end
+   
+      def self.value
+        VALUE
+      end
+    end
+   
+    class F < C
+      VALUE = 'F'
+    end
+    ```
+
+    1. ¿Qué imprimen cada una de las siguientes sentencias? ¿De dónde está obteniendo el valor?
+       1. `puts A.value`
+          * Imprime **A** lo obtiene del método `self.value` del módulo A, imprime la variable VALUE del módulo A 
+       1. `puts A::B.value`
+          * Imprime **B** lo obtiene del método `self.value` de la clase B del módulo A, imprime la variable VALUE de la clase B 
+       1. `puts C::D.value`
+          * Imprime **D** lo obtiene del método `self.value` de la clase D dentro de la clase C, imprime la variable VALUE de la clase D 
+       2. `puts C::E.value`
+          * Imprime **global** lo obtiene del método `self.value` del módulo E dentro de la clase C, imprime la variable VALUE global, porque ni el módulo E ni la clase C definió un valor para VALUE 
+       3. `puts F.value`
+          * Imprime **global** lo obtiene del método `self.value` de la clase C, imprime la variable VALUE global, porque la variable VALUE de la clase F está fuera del alcance del método que es llamado. La búsqueda es hacia arriba, no hacia abajo  
+  
+    2. ¿Qué pasaría si ejecutases las siguientes sentencias? ¿Por qué?
+       1. `puts A::value`
+          * Imprime **A** porque ejecuta el método `self.value` del módulo A 
+       1. `puts A.new.value`
+          * Da error porque no se puede instanciar a un módulo
+       2. `puts B.value`
+          * Da error porque no se reconoce a la clase B al estar dentro del módulo A. Para acceder a B hay que usar A::B
+       3. `puts C::D.value`
+          * .. Lo mismo que la primera vez que se llamó en 1.3
+       4. `puts C.value`
+          * Imprime **global** porque solo se tiene acceso a la variable VALUE global
+       5. `puts F.superclass.value`
+          * Imprime **global** porque solo se tiene acceso a la variable VALUE global
