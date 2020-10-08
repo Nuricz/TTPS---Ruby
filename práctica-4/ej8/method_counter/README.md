@@ -6,19 +6,10 @@ Esta gema se encarga de contabilizar los métodos llamados por una clase.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'method_counter'
+```bash
+$ gem build method_counter.gemspec
+$ gem install method_counter
 ```
-
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install method_counter
 
 ## Usage
 
