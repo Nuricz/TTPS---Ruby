@@ -2,7 +2,7 @@
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/method_counter`. To experiment with that code, run `bin/console` for an interactive prompt.
 
-TODO: Delete this and the text above, and describe your gem
+Esta gema se encarga de contabilizar los métodos llamados por una clase. 
 
 ## Installation
 
@@ -22,7 +22,38 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Para utilizar la funcionalidad de esta gema en una clase:
+```ruby
+require 'method_counter'
+class MyClass
+    include MethodCounter::Countable
+     def hi
+         puts "Hi!"
+     end
+     def bye
+         puts "Bye!"
+     end
+     #Se coloca count_invocations_of por cada método que se quiera contabilizar
+     count_invocations_of :hi
+     count_invocations_of :bye
+end
+
+#Main program
+
+m = MyClass.new
+m.invoked? :hi 
+# => false
+m.hola
+# Hi! => nil
+m.invoked? :hi 
+# true
+m.invoked :hi 
+# 1
+m.hola
+m.hola
+m.invoked :hi 
+# 3
+```
 
 ## Development
 
