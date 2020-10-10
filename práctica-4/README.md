@@ -136,3 +136,38 @@
     $ gem install method_counter
     ```
     
+## Sinatra
+
+1. ¿Qué es Rack? ¿Qué define? ¿Qué requisitos impone?
+    >https://medium.com/whynotio/what-is-rack-in-ruby-7e0615f1d9b6
+    
+    >http://codefol.io/posts/What-is-Rack-A-Primer
+
+2. Implementá una *app* llamada "MoL" de Rack que responda con un número al azar entre `1` y `42`, y que devuelva el *status* HTTP `200` sólo en caso que el número a devolver sea `42`, en cualquier otro caso debe retornar un *status* `404`.
+
+    >https://webapps-for-beginners.rubymonstas.org/rack/hello_world.html
+
+3. Sinatra se define como "*DSL para crear aplicaciones web*". ¿Qué quiere decir esto? ¿Qué es un *DSL*?
+
+    >https://webapps-for-beginners.rubymonstas.org/sinatra/dsl.html
+
+4. Implementá la misma *app* "MoL" de antes, ahora utilizando Sinatra para obtener el mismo resultado.
+
+5. Utilizando Sinatra, desarrollá una aplicación web que tenga los siguientes *endpoints*:
+   - `GET /` lista todos los endpoints disponibles (sirve a modo de documentación)
+   - `GET /mcm/:a/:b` calcula y presenta el mínimo común múltiplo de los valores numéricos `:a` y `:b`
+   - `GET /mcd/:a/:b` calcula y presenta el máximo común divisor de los valores numéricos `:a` y `:b`
+   - `GET /sum/*` calcula la sumatoria de todos los valores numéricos recibidos como parámetro en el *splat*
+   - `GET /even/*` presenta la cantidad de números pares que hay entre los valores numéricos recibidos como parámetro en el *splat*
+   - `GET /random` presenta un número al azar
+   - `GET /random/:lower/:upper` presenta un número al azar entre `:lower` y `:upper` (dos valores numéricos)
+
+6. Implementá un *middleware* para Sinatra que modifique la respuesta del web server y "tache" cualquier número que aparezca en el *body* de la respuesta, cambiando cada dígito por un caracter `X`. Utilizalo en la aplicación anterior para corroborar su funcionamiento.
+    >https://medium.com/@igor_marques/writing-a-middleware-for-your-sinatra-app-24982d12f14d
+7. Implementá otro *middleware* para Sinatra que agregue una cabecera a la respuesta HTTP, llamada `X-Xs-Count`, cuyo valor sea la cantidad de caracteres `X` que encuentra en el *body* de la respuesta. ¿Cómo debés incluirlo en tu *app* Sinatra para que este *middleware* se ejecute **antes** que el desarrollado en el punto anterior?
+
+8. Desarrollá una aplicación Sinatra para jugar al ahorcado. La aplicación internamente debe manejar una lista de palabras (cada una asociada a algún identificador de tu elección y a información sobre los intentos realizados para adivinar esa palabra), donde cada una representa una partida de ahorcado que puede ser jugada una sóla vez por ejecución del servidor de la aplicación web.  
+   La misma debe poseer las siguientes URLs:
+   - `POST /` inicia una partida. Internamente tomará una palabra al azar de entre las de la lista, y luego debe redirigir (con un *redirect* HTTP) a la URL propia de la partida (utilizando el identificador de la palabra  elegida) para que el jugador pueda comenzar a adivinar.
+   - `GET /partida/:id` muestra el estado actual de la partida (letras adivinadas, intentos fallidos y cantidad de intentos restantes). Si se adivinó la palabra o no quedan más intentos, deberá reflejarse también en la
+   - `PUT /partida/:id` acepta un parámetro por `PUT` llamado `intento` que debe contener la letra que el jugador intenta para adivinar la palabra. Internamente la aplicación chequeará si se pueden hacer más intentos en la partida, en caso afirmativo actualizará el estado de la partida, y en respuesta deberá hacer un *redirect* HTTP a la partida (a `/partida/:id`) para mostrar al jugador el estado de su partida.

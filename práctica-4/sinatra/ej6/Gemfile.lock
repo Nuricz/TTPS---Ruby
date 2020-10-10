@@ -1,0 +1,35 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    backports (3.18.2)
+    monkey-lib (0.4.2)
+      backports
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
+    rack (2.2.3)
+    rack-protection (2.1.0)
+      rack
+    ruby2_keywords (0.0.2)
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
+    sinatra-advanced-routes (0.4.1)
+      monkey-lib (~> 0.4.0)
+      sinatra (>= 0.9.4)
+      sinatra-sugar (~> 0.4.0)
+    sinatra-sugar (0.4.1)
+      monkey-lib (~> 0.4.0)
+      sinatra (>= 0.9.4)
+    tilt (2.0.10)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  sinatra
+  sinatra-advanced-routes
+
+BUNDLED WITH
+   2.1.4
