@@ -1,4 +1,6 @@
 class Office < ApplicationRecord
+    has_many :employees
+    
     def to_s
         "Nombre: " + name.to_s + "\n" +
         "Teléfono: " + phone_number.to_s + "\n" +
