@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_14_201910) do
+ActiveRecord::Schema.define(version: 2020_10_14_210054) do
 
   create_table "employees", force: :cascade do |t|
     t.string "name"
     t.integer "e_number"
-    t.integer "office_id", null: false
+    t.integer "office_id"
     t.index ["office_id"], name: "index_employees_on_office_id"
   end
 
