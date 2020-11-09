@@ -72,9 +72,11 @@
         >https://guides.rubyonrails.org/configuring.html
     2. ¿Cuáles son los archivos principales? Intentá relacionar este concepto con los ambientes que antes viste.
     3. Modificá el `locale` por defecto de tu aplicación para que sea español.
-        Se agrega la línea un archivo `es.yml` en _config/locales_ y se agrega la línea `config.i18n.default_locale = :es` en _config/application.rb_
+        
+        * Se agrega la línea un archivo `es.yml` en _config/locales_ y se agrega la línea `config.i18n.default_locale = :es` en _config/application.rb_
     4. Modificá la zona horaria de tu aplicación para que sea la de la Argentina.
-        Se agrega la línea `config.time_zone = 'Buenos Aires'` en _config/application.rb_ 
+        
+        * Se agrega la línea `config.time_zone = 'Buenos Aires'` en _config/application.rb_ 
 
 6. Sobre los *initializers*:
 
@@ -87,8 +89,8 @@
         * No, hay que reiniciar el servidor. Porque los inicializadores se cargan ni bien se levanta la app, por lo cual para que se vuelvan a ejecutar, hay que volver a levantar la app. Además cada inicializador indica que hay que reiniciar el servidor si es modificado.
     4. Creá un initializer en tu aplicación que imprima en pantalla el string `"Booting practica_cinco"`.  
        ¿En qué momento se visualiza este mensaje?
-
-       * Al ejecutar el comando `rails server`:
+        * Se crea un archivo de nombre `booting_string.rb` en _config/iniatializers_ con la línea: `puts "Booting #{Rails.application.class.parent.to_s.underscore}"` 
+        * Al ejecutar el comando `rails server`:
         ```BASH
         => Booting Puma
         => Rails 6.0.3.4 application starting in development 
@@ -106,12 +108,12 @@
 7. Sobre los *generators*:
 
     1. ¿Qué son? ¿Qué beneficios imaginás que trae su uso?
-        * Son scripts que se utilizan para generar distantas coasas para nuestra app, como controllers, models, plugins, etc. El mayor beneficio es automatizar la creación de múltiples archivos para realizar alguna nueva funcionalidad. 
+        * Son scripts que se utilizan para generar distantas cosas para nuestra app, como controllers, models, plugins, etc. El mayor beneficio es automatizar la creación de múltiples archivos para realizar alguna nueva funcionalidad. 
         * Lo mismo que hace el generador se puede hacer a mano creando archivo por archivo.
     2. ¿Con qué comando podés consultar todos los generators disponibles en tu app Rails?
         * `rails generate`
     3. Utilizando el generator adecuado, creá un controller llamado `PoliteController` que tenga una acción `salute` que responda con un saludo aleatorio de entre un arreglo de 5 diferentes, como por ejemplo *"Good day sir/ma'am."*.
-
+        * `rails generate controller PoliteController salute`
 8. Sobre *routing*:
 
     1. ¿Dónde se definen las rutas de la app Rails?
@@ -213,13 +215,42 @@
         * `available`: `boolean`, por defecto `false`, no puede ser nulo.
 
         `rails g migration CreateOffice name:string phone_number:string adress:text available:boolean`
-        
+        * Luego de tirar el comando agrego las restricciones correspondientes
+        ```rb
+        class CreateOffice < ActiveRecord::Migration[6.0]
+        def change
+            create_table :offices do |t|
+            t.string :name, limit: 255, null: false
+            t.string :phone_number, limit: 30, null: false
+            t.text :adress
+            t.boolean :available, null: false, default: false
+            end
+        end
+        end
+        ```
+
 6. Creá el modelo `Office` para la tabla `offices` que creaste antes, e implementale el método `#to_s`.
 
 7. Utilizando migraciones, creá la tabla y el modelo para la clase `Employee`, con la siguiente estructura:
     * `name`: `string` de `150` caracteres, no puede ser nulo.
     * `e_number`: `integer`, no puede ser nulo, debe ser único.
     * `office_id`: `integer`, foreign key hacia `offices`.
+
+        `rails g migration CreateEmployee name:string e_number:integer office:references`
+
+        * Agrego la relación de foreign key con la tabla offices `{ to_table: :offices }`
+    
+        ```rb
+        class CreateEmployee < ActiveRecord::Migration[6.0]
+            def change
+                create_table :employees do |t|
+                t.string :name
+                t.integer :e_number
+                t.references :office, null: false, foreign_key: { to_table: :offices }
+                end
+            end
+        end
+        ```
 
 8. Agregá una asociación entre `Employee` y `Office` acorde a la columna `office_id` que posee la tabla `employees`.
     1. ¿Qué tipo de asociación declaraste en la clase `Employee`?
@@ -230,12 +261,16 @@
         
         `Office.methods - ApplicationRecord.methods`
         ```rb
-        => [:before_remove_for_employees, :before_remove_for_employees?, :before_remove_for_employees=, :after_remove_for_employees, :after_remove_for_employees?, :after_remove_for_employees=, :before_add_for_employees, :before_add_for_employees?, :before_add_for_employees=, :after_add_for_employees, :after_add_for_employees?, :after_add_for_employees=]
+        => [:after_add_for_employees, :after_add_for_employees?, :after_add_for_employees=, :before_remove_for_employees, :before_remove_for_employees?, :before_remove_for_employees=, :after_remove_for_employees, :after_remove_for_employees?, :after_remove_for_employees=, :before_add_for_employees, :before_add_for_employees?, :before_add_for_employees=]
         ```
-    5. Modificá el mapeo de rutas de tu aplicación Rails para que al acceder a `/` se vaya al controller definido antes (`polite#salute`).
+    4. Modificá el mapeo de rutas de tu aplicación Rails para que al acceder a `/` se vaya al controller definido antes (`polite#salute`).
 
         `get '/', action: :salute, controller: 'polite'`
 
+        * En _app/views/polite/salute.html.erb_
+        ```html
+        <%= salute.html_safe %>
+        ```
 9. Sobre *scopes*:
     1. ¿Qué son los scopes de AR? ¿Para qué los utilizarías?
         
@@ -273,7 +308,9 @@
         >https://guides.rubyonrails.org/v3.2.18/getting_started.html#creating-a-resource
 
     3. Utilizando el generator anterior, generá un controlador de scaffold para el modelo `Office` y otro para el modelo `Employee`.
-     
+        * `rails g scaffold_controller Employee`
+        * `rails g scaffold_controller Office`
+
     4. ¿Qué rutas agregó este generator?
-     
+        * Todas rutas correspondientes a Alta, Baja, Modificación y Vista
     5. Analizá el código que se te generó para los controllers y para las vistas, y luego modificalo para que no permita el borrado de ninguno de los elementos. ¿Qué cambios debés hacer para que las vistas no muestren la opción, el controller no tenga la acción `destroy` y las rutas de borrado dejen de existir en la aplicación?
